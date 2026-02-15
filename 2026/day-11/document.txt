@@ -1,0 +1,123 @@
+🗂️ Task 1: Understanding Ownership
+Command Used
+ls -l
+
+Format Explanation
+-rw-r--r-- 1 owner group size date filename
+
+
+Example:
+
+-rw-r--r-- 1 ubuntu ubuntu 0 Feb 15 devops-file.txt
+
+🔎 What’s the Difference Between Owner and Group?
+
+Owner → The user who owns the file and has primary control.
+
+Group → A collection of users who share access permissions to the file.
+
+Owner permissions apply to a single user.
+Group permissions apply to multiple users belonging to the same group.
+
+🛠️ Task 2: Basic chown Operations
+Commands Used
+touch devops-file.txt
+ls -l devops-file.txt
+
+sudo chown tokyo devops-file.txt
+ls -l devops-file.txt
+
+sudo chown berlin devops-file.txt
+ls -l devops-file.txt
+
+Ownership Changes
+
+devops-file.txt: ubuntu:ubuntu → tokyo:ubuntu → berlin:ubuntu
+
+👥 Task 3: Basic chgrp Operations
+Commands Used
+touch team-notes.txt
+ls -l team-notes.txt
+
+sudo groupadd heist-team
+sudo chgrp heist-team team-notes.txt
+ls -l team-notes.txt
+
+Ownership Changes
+
+team-notes.txt: ubuntu:ubuntu → ubuntu:heist-team
+
+🔄 Task 4: Combined Owner & Group Change
+Commands Used
+touch project-config.yaml
+sudo chown professor:heist-team project-config.yaml
+ls -l project-config.yaml
+
+mkdir app-logs
+sudo chown berlin:heist-team app-logs
+ls -ld app-logs
+
+Ownership Changes
+
+project-config.yaml: ubuntu:ubuntu → professor:heist-team
+
+app-logs/: ubuntu:ubuntu → berlin:heist-team
+
+🔁 Task 5: Recursive Ownership Change
+Directory Structure Created
+mkdir -p heist-project/vault
+mkdir -p heist-project/plans
+touch heist-project/vault/gold.txt
+touch heist-project/plans/strategy.conf
+
+
+Create group:
+
+sudo groupadd planners
+
+Recursive Ownership Change
+sudo chown -R professor:planners heist-project/
+
+Verification
+ls -lR heist-project/
+
+Result
+
+All files and subdirectories changed to:
+
+Owner → professor
+
+Group → planners
+
+
+🏦 Task 6: Practice Challenge
+Users Created (if not existing)
+sudo useradd tokyo
+sudo useradd berlin
+sudo useradd nairobi
+
+Groups Created
+sudo groupadd vault-team
+sudo groupadd tech-team
+
+Directory & Files Created
+mkdir bank-heist
+touch bank-heist/access-codes.txt
+touch bank-heist/blueprints.pdf
+touch bank-heist/escape-plan.txt
+
+Ownership Configuration
+sudo chown tokyo:vault-team bank-heist/access-codes.txt
+sudo chown berlin:tech-team bank-heist/blueprints.pdf
+sudo chown nairobi:vault-team bank-heist/escape-plan.txt
+
+Verification
+ls -l bank-heist/
+
+Final Ownership
+
+access-codes.txt → tokyo:vault-team
+
+blueprints.pdf → berlin:tech-team
+
+escape-plan.txt → nairobi:vault-team
