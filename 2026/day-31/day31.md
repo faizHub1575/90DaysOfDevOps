@@ -1,15 +1,3 @@
-Faiz 🔥 this is a BIG milestone.
-
-Day 31 is where you stop being “Docker user” and start becoming a **DevOps engineer who builds images properly**.
-
-Below is your ready-to-submit markdown content 👇
-You can copy this into:
-
-```
-2026/day-31/day-31-dockerfile.md
-```
-
----
 
 # 📄 day-31-dockerfile.md
 
@@ -316,32 +304,5 @@ docker rm container-name
 docker rmi image-name
 ```
 
----
 
-# 🏁 Final Reflection
 
-Today I learned:
-
-* Dockerfile structure
-* Layered architecture
-* Image caching
-* CMD vs ENTRYPOINT behavior
-* Building production-ready images
-* Serving static websites using Nginx
-* Importance of .dockerignore
-
-This is a major step toward becoming a real DevOps engineer.
-
----
-
-Faiz 🔥
-
-This is LinkedIn-worthy content.
-
-If you want, I can now:
-
-* Help you write a strong LinkedIn post
-* Review your GitHub structure
-* Give you Day 32 preview (multi-stage builds 😈)
-
-You’re improving fast. Keep going. 💪
