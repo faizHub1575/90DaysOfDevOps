@@ -1,0 +1,313 @@
+Perfect Faiz 🔥
+This is how real engineers grow — by reviewing mistakes properly.
+
+Below is your structured learning document.
+You can save it as:
+
+2026/day-33/docker-compose-debugging-lessons.md
+📄 Docker Compose Debugging Lessons – WordPress + MariaDB
+👨‍💻 Project: Two-Container Setup (WordPress + Database)
+🎯 Objective
+
+Run WordPress container
+
+Run MySQL/MariaDB container
+
+Connect via service name
+
+Persist data using named volume
+
+Debug connection errors
+
+🚨 Mistakes I Made & How They Were Resolved
+❌ 1. YAML Indentation Errors
+Error:
+services.web.ports must be an array
+Cause:
+
+Incorrect YAML structure like:
+
+ports: "8080:80"
+Fix:
+
+Use list format:
+
+ports:
+  - "8080:80"
+🔎 Lesson:
+
+YAML is indentation-sensitive.
+
+Use 2 spaces
+
+Never use tabs
+
+Lists require -
+
+❌ 2. Typo in Image Tag
+Error:
+nginx:lastest not found
+Cause:
+
+Misspelled latest
+
+Fix:
+
+Corrected to:
+
+image: nginx:latest
+🔎 Lesson:
+
+Image tag spelling matters. Docker will not auto-correct.
+
+❌ 3. Undefined Volume Error
+Error:
+service "db" refers to undefined volume mysql-data
+Cause:
+
+Volume declared inside service but not globally.
+
+Fix:
+
+Add bottom section:
+
+volumes:
+  mysql-data:
+🔎 Lesson:
+
+Named volumes must be declared at root level, not inside services.
+
+❌ 4. Volume Section Placed Inside services
+Error:
+services.volumes must be a mapping
+Cause:
+
+Placed volumes: inside services: block.
+
+Fix:
+
+Move it outside:
+
+Correct structure:
+
+services:
+  db:
+  wordpress:
+
+volumes:
+  mysql-data:
+🔎 Lesson:
+
+Understand YAML hierarchy visually.
+
+❌ 5. MySQL 8 Authentication Conflict
+Problem:
+
+WordPress returned 500 error.
+
+Cause:
+
+MySQL 8 authentication mismatch.
+
+Fix:
+
+Switched to MariaDB 10.6 (lighter + compatible).
+
+🔎 Lesson:
+
+Version compatibility matters in containerized apps.
+
+❌ 6. Volume Corruption After Failed Init
+Problem:
+
+Root password not applied.
+
+Cause:
+
+Database partially initialized in previous attempt.
+
+Fix:
+
+Full reset:
+
+docker compose down -v
+docker volume prune -f
+docker compose up -d
+🔎 Lesson:
+
+Stateful containers depend on volume state.
+
+If DB behaves weird → suspect volume.
+
+❌ 7. Wrong WordPress DB Username
+Log Error:
+Access denied for user 'example username'
+Cause:
+
+WordPress used default example credentials.
+
+Fix:
+
+Set correct environment variables:
+
+environment:
+  WORDPRESS_DB_HOST: db:3306
+  WORDPRESS_DB_USER: wpuser
+  WORDPRESS_DB_PASSWORD: wppassword
+  WORDPRESS_DB_NAME: wordpress
+
+Then reset volume.
+
+🔎 Lesson:
+
+If WordPress generates wp-config.php with wrong values,
+you must reset container volume.
+
+📘 How Environment Variables Work in docker-compose.yml
+🔹 What is environment in YAML?
+
+Inside a service:
+
+environment:
+  KEY: value
+
+This sends variables inside the container.
+
+It is equivalent to:
+
+docker run -e KEY=value
+🔹 Example: Database Container
+environment:
+  MYSQL_DATABASE: wordpress
+  MYSQL_USER: wpuser
+  MYSQL_PASSWORD: wppassword
+  MYSQL_ROOT_PASSWORD: rootpassword
+
+These are read by MariaDB entrypoint script.
+
+They tell the container:
+
+Create database
+
+Create user
+
+Set password
+
+🔹 Example: WordPress Container
+environment:
+  WORDPRESS_DB_HOST: db:3306
+  WORDPRESS_DB_USER: wpuser
+  WORDPRESS_DB_PASSWORD: wppassword
+  WORDPRESS_DB_NAME: wordpress
+
+WordPress reads these values and automatically generates:
+
+wp-config.php
+
+That file contains DB credentials permanently.
+
+🔥 Important Behavior
+
+Environment variables are used:
+
+Only during container startup
+
+If volume already contains config → they won’t override
+
+If wrong values were used once → must reset volume
+
+🧠 How Service Name Works
+
+In:
+
+WORDPRESS_DB_HOST: db:3306
+
+db is not random.
+
+It is the service name:
+
+services:
+  db:
+
+Docker Compose creates internal DNS.
+
+So:
+
+db → container IP
+
+That’s why no IP address is required.
+
+🧩 Final Working Architecture
+Browser
+   ↓
+WordPress Container
+   ↓ (db:3306)
+MariaDB Container
+   ↓
+Named Volume (Persistent Data)
+🚀 Final Working Compose File
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppassword
+      WORDPRESS_DB_NAME: wordpress
+
+volumes:
+  mysql-data:
+💡 What I Learned Today
+
+YAML structure is critical
+
+Named volumes persist state
+
+Service name acts as hostname
+
+Containers start in order but may not be “ready”
+
+Version compatibility matters
+
+Always check logs before guessing
+
+Reset volume when debugging DB issues
+
+🔥 DevOps Growth Moment
+
+Today you learned:
+
+Not just how to run containers
+But how to debug integration failures.
+
+That’s real DevOps engineering.
+
+If you want, next I can teach:
+
+Using .env file (more professional)
+
+Healthchecks in Compose
+
+Production-ready Compose setup
+
+Docker Compose interview questions
+
+You leveled up today Faiz 🚀💪
