@@ -1,0 +1,60 @@
+services:
+
+  web:
+    build: ./app
+    container_name: faiz_web
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      REDIS_HOST: redis
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - faiz_network
+    labels:
+      project: "faiz-devops-lab"
+      service: "web"
+
+  db:
+    image: postgres:15
+    container_name: faiz_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - faiz_pgdata:/var/lib/postgresql/data
+    networks:
+      - faiz_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      project: "faiz-devops-lab"
+      service: "database"
+
+  redis:
+    image: redis:7
+    container_name: faiz_redis
+    restart: on-failure
+    networks:
+      - faiz_network
+    labels:
+      project: "faiz-devops-lab"
+      service: "cache"
+
+networks:
+  faiz_network:
+
+volumes:
+  faiz_pgdata:
